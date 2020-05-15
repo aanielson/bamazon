@@ -36,7 +36,6 @@ function listProducts() {
             console.log("====================");
         };  
     });
-    connection.end();
 }
 
 //The app should then prompt users with two messages.
@@ -45,23 +44,25 @@ function listProducts() {
 function selectItem() {
     inquirer.prompt([
         {
-            name: "item_id",
+            name: "choice",
             message: "What is the ID of the product you would like to purchase?"
         },
         {
             type: "number",
-            name: "amount",
+            name: "quantity",
             message: "How many units would you like to purchase?"
         }
     ]).then(function(answers) {
-        var item_id = answers.item_id;
-        var amount = answers.amount;
-        //Once the customer has placed the order your application should check if your store has enough of the product
+        var choice_id = parseInt(answers.choice);
+        var quantity = parseInt(answers.quantity);
+        // Once the customer has placed the order your application should check if your store has enough of the product
         connection.query("SELECT * FROM products WHERE ?", [
-            {item_id}
+            {item_id: choice_id}
         ], function(err, res) {
             if(err) throw err;
-            if (amount > res.stock_quantity) {
+            var item = res[0].product_name;
+            var itemPrice = res[0].price;
+            if (quantity > res.stock_quantity) {
                 //If not, the app should log a phrase like Insufficient quantity!
                 //then prevent the order from going through.
                 console.log("Insufficient quantity!");
@@ -72,28 +73,22 @@ function selectItem() {
                 //However, if your store does have enough of the product, you should fulfill the customer's order.
                 updateProduct();
                 //Once the update goes through, show the customer the total cost of their purchase.
-                console.log("Item to be purchase: " + res.product_name);
-                console.log("Amount: " + amount);
-                console.log("Total Cost: " + res.price);
+                console.log("Item to be purchased: " + item);
+                console.log("Amount: " + quantity);
+                console.log("Total Cost: " + itemPrice);
             };
         });
-        connection.end();
     });
 }
 
+
+
 //This means updating the SQL database to reflect the remaining quantity.
-function updateProduct(item_id, stock_quantity) {
+function updateProduct(quantity, choice_id) {
     console.log("Updating...");
 	connection.query(
-		"UPDATE products SET ? WHERE ?",
-		[
-			{
-				stock_quantity: stock_quantity
-            },
-            {
-                item_id: item_id
-            }
-		],
+		"UPDATE products SET stock_quantity = stock_quantity - ? WHERE item_id = ?",
+		[quantity, choice_id],
 		function(err, res){
 			if(err) throw err;
 			console.log(res);
