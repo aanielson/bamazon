@@ -5,6 +5,9 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 
+//===== create necessary global variables
+var choice_id;
+var quantity;
 //=====create connection to database
 var connection = mysql.createConnection({
     host: "localhost",
@@ -17,10 +20,9 @@ var connection = mysql.createConnection({
 //====when loaded, display all info for all products
 connection.connect(function(err) {
     if (err) throw err;
-    listProducts();
-    selectItem();
 })
 
+listProducts();
 
 //====function to list all products
 function listProducts() {
@@ -35,6 +37,7 @@ function listProducts() {
             console.log("Price: $" + res[i].price);
             console.log("====================");
         };  
+        selectItem();
     });
 }
 
@@ -53,8 +56,8 @@ function selectItem() {
             message: "How many units would you like to purchase?"
         }
     ]).then(function(answers) {
-        var choice_id = parseInt(answers.choice);
-        var quantity = parseInt(answers.quantity);
+        choice_id = parseInt(answers.choice);
+        quantity = parseInt(answers.quantity);
         // Once the customer has placed the order your application should check if your store has enough of the product
         connection.query("SELECT * FROM products WHERE ?", [
             {item_id: choice_id}
@@ -68,14 +71,11 @@ function selectItem() {
                 console.log("Insufficient quantity!");
                 console.log("Select a different product or a different amount.");
                 listProducts();
-                selectItem();
             } else {
                 //However, if your store does have enough of the product, you should fulfill the customer's order.
                 updateProduct();
                 //Once the update goes through, show the customer the total cost of their purchase.
-                console.log("Item to be purchased: " + item);
-                console.log("Amount: " + quantity);
-                console.log("Total Cost: " + itemPrice);
+                
             };
         });
     });
@@ -84,14 +84,18 @@ function selectItem() {
 
 
 //This means updating the SQL database to reflect the remaining quantity.
-function updateProduct(quantity, choice_id) {
-    console.log("Updating...");
+function updateProduct() {
+    console.log("updating...");
 	connection.query(
 		"UPDATE products SET stock_quantity = stock_quantity - ? WHERE item_id = ?",
-		[quantity, choice_id],
+		quantity, choice_id,
 		function(err, res){
-			if(err) throw err;
-			console.log(res);
+            if(err) throw err;
+            console.log(res);
+			//console.log("Number of " + res.product_name + " in inventory: " + res.stock_quantity);
 		}
     );
+    console.log("Item to be purchased: " + item);
+    console.log("Amount: " + quantity);
+    console.log("Total Cost: " + (quantity * itemPrice));
 }
