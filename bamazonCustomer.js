@@ -20,9 +20,10 @@ var connection = mysql.createConnection({
 //====when loaded, display all info for all products
 connection.connect(function(err) {
     if (err) throw err;
+    listProducts();
 })
 
-listProducts();
+
 
 //====function to list all products
 function listProducts() {
@@ -65,7 +66,9 @@ function selectItem() {
             if(err) throw err;
             var item = res[0].product_name;
             var itemPrice = res[0].price;
-            if (quantity > res.stock_quantity) {
+            var itemQuantity = res[0].stock_quantity;
+            console.log("There are currently " + itemQuantity + " " + item + "s available");
+            if (quantity > itemQuantity) {
                 //If not, the app should log a phrase like Insufficient quantity!
                 //then prevent the order from going through.
                 console.log("Insufficient quantity!");
@@ -73,9 +76,12 @@ function selectItem() {
                 listProducts();
             } else {
                 //However, if your store does have enough of the product, you should fulfill the customer's order.
-                updateProduct();
+                updateProduct(quantity, choice_id);
                 //Once the update goes through, show the customer the total cost of their purchase.
-                
+                console.log("Item to be purchased: " + item);
+                console.log("Amount: " + quantity);
+                console.log("Total Cost: " + (quantity * itemPrice));
+                finalItemQuantity(choice_id);
             };
         });
     });
@@ -84,18 +90,25 @@ function selectItem() {
 
 
 //This means updating the SQL database to reflect the remaining quantity.
-function updateProduct() {
+function updateProduct(a, b) {
     console.log("updating...");
 	connection.query(
 		"UPDATE products SET stock_quantity = stock_quantity - ? WHERE item_id = ?",
-		quantity, choice_id,
+		[a, b],
 		function(err, res){
             if(err) throw err;
-            console.log(res);
+            //console.log(res);
 			//console.log("Number of " + res.product_name + " in inventory: " + res.stock_quantity);
 		}
-    );
-    console.log("Item to be purchased: " + item);
-    console.log("Amount: " + quantity);
-    console.log("Total Cost: " + (quantity * itemPrice));
+    );  
 }
+function finalItemQuantity(choice_id) {
+    connection.query("SELECT * FROM products WHERE ?", [
+        {item_id: choice_id}
+    ], function(err, res) {
+        if(err) throw err;
+        var item = res[0].product_name;
+        var itemQuantity = res[0].stock_quantity;
+        console.log("There are now only " + itemQuantity + " " + item + "s available.");
+    });
+};
