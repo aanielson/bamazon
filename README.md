@@ -1,8 +1,8 @@
 # Bamazon
 
 ## Problem to be Solved
-In this app, I created an Amazon-like storefront with MySQL, Inquirer, and node.js. 
-The app takes in orders from "customers" and deplete stock from the store's inventory.
+In this app, I created an Amazon-like storefront.
+The app takes in orders from "customers" and depletes stock from the store's inventory.
 
 ## Organization
 Using the code within the schema.sql file, a database and table must be created.
@@ -28,7 +28,7 @@ https://youtu.be/Ym6n_Op2qH4
 ## GitHub Link
 https://github.com/aanielson/bamazon
 
-## Teachnologies Used:
+## Technologies Used:
 JavaScript
 Node
 MySQL
