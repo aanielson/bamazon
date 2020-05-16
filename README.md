@@ -1,10 +1,10 @@
-# bamazon
+# Bamazon
 
 ## Problem to be Solved
 In this app, I created an Amazon-like storefront with MySQL, Inquirer, and node.js. 
 The app takes in orders from "customers" and deplete stock from the store's inventory.
 
-# Organization
+## Organization
 Using the code within the schema.sql file, a database and table must be created.
 Open the bamazonCutsomer app with node and the user will see the list of available products, as well as their prices and ids.
 The user is then prompted to input the id of the product they would like to purchase.
@@ -23,7 +23,7 @@ They are then run back through the beginning of the sequence to see the availabl
 1. If insufficient product, you will start over.
 
 ## video example
-
+https://youtu.be/Ym6n_Op2qH4
 
 ## GitHub Link
 https://github.com/aanielson/bamazon
@@ -36,6 +36,7 @@ MySQL
 # Crucial node packages:
 MySQL
 Inquirer
+console.table
 
 # My Role
 I created this!! This is our first project to utilize MySQL while applying previous knowledge of JavaScript and Node.js.

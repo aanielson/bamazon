@@ -4,6 +4,7 @@
 //======Include necessary packages
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var cTable = require('console.table');
 
 //===== create necessary global variables
 var choice_id;
@@ -23,21 +24,20 @@ connection.connect(function(err) {
     listProducts();
 })
 
-
-
 //====function to list all products
 function listProducts() {
     //SELECT to view all products
     connection.query("SELECT * FROM products", function(err, res) {
         if(err) throw err;
         console.log("Available Items:");
-        console.log("====================");
-        for (var i = 0; i < res.length; i++) {          
-            console.log("Item ID: " + res[i].item_id);
-            console.log(res[i].product_name);
-            console.log("Price: $" + res[i].price);
-            console.log("====================");
-        };  
+        console.table(res);
+        // console.log("====================");
+        // for (var i = 0; i < res.length; i++) {          
+        //     console.log("Item ID: " + res[i].item_id);
+        //     console.log(res[i].product_name);
+        //     console.log("Price: $" + res[i].price);
+        //     console.log("====================");
+        // };  
         selectItem();
     });
 }
@@ -86,8 +86,6 @@ function selectItem() {
         });
     });
 }
-
-
 
 //This means updating the SQL database to reflect the remaining quantity.
 function updateProduct(a, b) {
